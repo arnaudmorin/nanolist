@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/peterverraedt/tinylist/list"
+	"github.com/arnaudmorin/nanolist/list"
 )
 
 func main() {
@@ -18,7 +18,7 @@ func main() {
 func run(params []string) error {
 	backend := NewSQLBackend()
 
-	app := kingpin.New("tinylist", "Tiny list server")
+	app := kingpin.New("nanolist", "nanolist server")
 	app.HelpFlag.Short('h')
 	debug := app.Flag("debug", "Don't send emails - print them to stdout instead").Bool()
 	configFile := app.Flag("config", "Load configuration from specified file").Default("").String()

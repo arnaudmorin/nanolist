@@ -1,4 +1,4 @@
-module github.com/peterverraedt/tinylist
+module github.com/arnaudmorin/nanolist
 
 go 1.10
 
