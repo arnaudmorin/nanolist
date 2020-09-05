@@ -13,7 +13,7 @@ nanolist is controlled by emailing nanolist with a command in the subject.
 The following commands are available:
 
 * `help` - Reply with a list of valid commands
-* `lists` or `list` - Reply with a list of available mailing lists
+* `list` - Reply with a list of available mailing lists
 * `subscribe list-id` - Subscribe to receive mail sent to the given list
 * `unsubscribe list-id` - Unsubscribe from receiving mail sent to the given list
 
@@ -41,7 +41,7 @@ and reply using the configured SMTP server.
 
 Some people prefer mailing lists for patch submission and review, some people
 want to play mailing-list based games such as nomic, and some people are just
-nostalgic.
+nostalgic and/or crazy.
 
 Installation
 ------------
@@ -53,17 +53,18 @@ Second, you'll need to write a config to either `/etc/nanolist.ini`
 or `/usr/local/etc/nanolist.ini` as follows:
 
 You can also specify a custom config file location by invoking nanolist
-with the `-config` flag: `-config=/path/to/config.ini`
+with the `--config` flag: `nanolist --config=/path/to/config.ini`
 
+Example of configuration file:
 ```ini
 # File for event and error logging. nanolist does not rotate its logs
-# automatically. Recommended path is /var/log/mail/nanolist
+# automatically.
 # You'll need to set permissions on it depending on which account your MTA
 # runs nanolist as.
-log = /var/log/mail/nanolist
+log = /var/log/nanolist.log
 
 # An sqlite3 database is used for storing the email addresses subscribed to
-# each mailing list. Recommended location is /var/db/nanolist.db
+# each mailing list.
 # You'll need to set permissions on it depending on which account your MTA
 # runs nanolist as.
 database = /var/db/nanolist.db
@@ -79,38 +80,45 @@ smtp_username = "nanolist"
 smtp_password = "hunter2"
 ```
 
-Create a list by invoking
+Initiate the DB and create a list by invoking nanolist:
 ```bash
 nanolist create --list=golang@example.com --name="Go programming" --description="General discussion of Go programming" --bcc archive@example.com --bcc datahoarder@example.com
 nanolist create --list=announce@example.com --name="Announcements" --description="Important announcements" --poster admin@example.com --poster moderator@example.com
 nanolist create --list=robertpaulson99@example.com --name "fight club" --flag subscribers_only --flag hidden
 ```
 
-Lastly, you need to hook the desired incoming addresses to nanolist:
-
-In `/etc/aliases`:
-```
-nanolist: "| /path/to/bin/nanolist message"
+More in help"
+```bash
+nanolist --help
 ```
 
-And run `newaliases` for the change to take effect.
+Postfix configuration
+---------------------
 
-This creates an alias that pipes messages sent to the `nanolist` alias to the
-nanolist command.
+In `main.cf`:
 
-The final step is telling your preferred MTA to route mail to this address
-when needed.
-
-For postfix edit `/etc/postfix/aliases` and add:
 ```
-lists@example.com nanolist
-golang@example.com nanolist
-announce@example.com nanolist
-robertpaulson99@example.com nanolist
+# If nanolist is alone on this mail server
+virtual_transport = nanolist
+
+# Or if in combination with dovecot
+virtual_transport = virtual
+transport_maps = mysql:/etc/postfix/mysql-virtual-transports.cf
+# And make sure the SELECT statement for your list domain (example.com) return 'nanolist'
 ```
+
+There is a way to do that with hash also instead of mysql. Check postfix manual.
+
+In `master.cf`, at the end of the file:
+```
+nanolist  unix  -       n       n       -       -       pipe
+  flags=FR user=vmail argv=/path/to/nanolist
+  message
+```
+
 and restart postfix.
 
-Congratulations, you've now set up 3 mailing lists of your own!
+Congratulations, you've now set up mailing lists!
 
 License
 -------
