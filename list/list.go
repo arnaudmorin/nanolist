@@ -2,7 +2,9 @@ package list
 
 import (
 	"fmt"
+	"log"
 	"math"
+	"net/mail"
 	"strings"
 	"time"
 )
@@ -93,12 +95,36 @@ func (list *list) Send(msg *Message, envelopeSender string, SMTPHostname string,
 			return err
 		}
 		if ok {
+			// Do not send back if subscriber is the originator
+			fromMails, _ := mail.ParseAddressList(msg.From)
+			if fromMails[0].Address == subscription.Address {
+				log.Print("Removed from recipients because found in From: ", subscription.Address)
+				continue
+			}
+
+			// Do not send back if subscriber is in cc / to
+			toMails, _ := mail.ParseAddressList(msg.To)
+			ccMails, _ := mail.ParseAddressList(msg.Cc)
+			found := false
+			for _, email := range append(toMails, ccMails...) {
+				email.Address = strings.ToLower(email.Address)
+				if email.Address == subscription.Address {
+					found = true
+					log.Print("Removed from recipients because found in cc or to: ", subscription.Address)
+				}
+			}
+			if found {
+				continue
+			}
+
 			recipients = append(recipients, subscription.Address)
 		}
 	}
 	for _, bcc := range list.Bcc {
 		recipients = append(recipients, bcc)
 	}
+
+	log.Print("Final recipients: ", recipients)
 
 	// Send using VERP
 	return msg.SendVERP(envelopeSender, recipients, SMTPHostname, SMTPPort, SMTPUsername, SMTPPassword, debug)

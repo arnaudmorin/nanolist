@@ -49,6 +49,9 @@ Installation
 First, you'll need to build and install the nanolist binary:
 `go get github.com/arnaudmorin/nanolist`
 
+If you already clone code, local build:
+``
+
 Second, you'll need to write a config to either `/etc/nanolist.ini`
 or `/usr/local/etc/nanolist.ini` as follows:
 
@@ -67,14 +70,15 @@ log = /var/log/nanolist.log
 # each mailing list.
 # You'll need to set permissions on it depending on which account your MTA
 # runs nanolist as.
-database = /var/db/nanolist.db
+database = /var/local/nanolist.db
 
 [bot]
 # Address nanolist should receive user commands on
-command_address = lists@example.com
+command_address = lists@lists.example.com
+bounces_address = bounces@lists.example.com
 
 # SMTP details for sending mail
-smtp_hostname = "smtp.example.com"
+smtp_hostname = "smtp.lists.example.com"
 smtp_port = 25
 smtp_username = "nanolist"
 smtp_password = "hunter2"
@@ -82,9 +86,22 @@ smtp_password = "hunter2"
 
 Initiate the DB and create a list by invoking nanolist:
 ```bash
-nanolist create --list=golang@example.com --name="Go programming" --description="General discussion of Go programming" --bcc archive@example.com --bcc datahoarder@example.com
-nanolist create --list=announce@example.com --name="Announcements" --description="Important announcements" --poster admin@example.com --poster moderator@example.com
-nanolist create --list=robertpaulson99@example.com --name "fight club" --flag subscribers_only --flag hidden
+# Regular list
+nanolist create --name="RMCS" --description="Liste du Radio Model Club Senonais" rmcs@lists.example.com
+
+# List with bcc (e.g. for archiving)
+nanolist create --name="RMCS" --description="Liste du Radio Model Club Senonais" --bcc archive@lists.example.com rmcs@lists.example.com
+
+# List restricted to some users (e.g. for announcements / newletters)
+nanolist create --name="RMCS annonces" --description="Annonces du club" --poster admin@lists.example.com announce@lists.example.com
+
+# Hidden list, for subscribers only
+nanolist create --name "fight club" --flag subscribers_only --flag hidden fc@lists.example.com
+```
+
+Add users to the ml
+```
+nanolist subscribe arnaud@example.com rmcs@lists.example.com
 ```
 
 More in help"
@@ -104,7 +121,7 @@ virtual_transport = nanolist
 # Or if in combination with dovecot
 virtual_transport = virtual
 transport_maps = mysql:/etc/postfix/mysql-virtual-transports.cf
-# And make sure the SELECT statement for your list domain (example.com) return 'nanolist'
+# And make sure the SELECT statement for your list domain (lists.example.com) return 'nanolist'
 ```
 
 There is a way to do that with hash also instead of mysql. Check postfix manual.
