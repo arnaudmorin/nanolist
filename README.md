@@ -8,14 +8,56 @@ of setting up other mailing list software.
 Usage
 -----
 
-nanolist is controlled by emailing nanolist with a command in the subject.
+nanolist is controlled by end users by emailing nanolist with a command in the subject.
 
-The following commands are available:
+The following public commands are available:
 
-* `help` - Reply with a list of valid commands
-* `list` - Reply with a list of available mailing lists
-* `subscribe list-id` - Subscribe to receive mail sent to the given list
-* `unsubscribe list-id` - Unsubscribe from receiving mail sent to the given list
+* `list  - Reply with a list of available mailing lists
+* `subscribe list-address  - Subscribe to receive mail sent to the given list
+* `unsubscribe list-address  - Unsubscribe from receiving mail sent to the given list
+
+nanolist can also be used from cli for admins:
+
+```
+$ nanolist --config /etc/nanolist/nanolist.ini --help
+usage: nanolist [<flags>] <command> [<args> ...]
+
+nanolist server
+
+Flags:
+  -h, --help       Show context-sensitive help (also try --help-long and --help-man).
+      --debug      Don't send emails - print them to stdout instead
+      --config=""  Load configuration from specified file
+
+Commands:
+  help [<command>...]
+    Show help.
+
+  check
+    Check the configuration
+
+  message
+    Process a message from stdin
+
+  list [<flags>]
+    List all lists and their subscribers
+
+  subscribe <address> <list>
+    Subscribe to a list
+
+  unsubscribe <address> [<list>]
+    Unsubscribe from a list
+
+  create [<flags>] <list>
+    Create a list
+
+  modify [<flags>] <list>
+    Update a list
+
+  delete <list>
+    Delete a list
+
+```
 
 Frequently Asked Questions
 --------------------------
