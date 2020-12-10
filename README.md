@@ -12,9 +12,9 @@ nanolist is controlled by end users by emailing nanolist with a command in the s
 
 The following public commands are available:
 
-* `list  - Reply with a list of available mailing lists
-* `subscribe list-address  - Subscribe to receive mail sent to the given list
-* `unsubscribe list-address  - Unsubscribe from receiving mail sent to the given list
+* `list`  - Reply with a list of available mailing lists
+* `subscribe list-address`  - Subscribe to receive mail sent to the given list
+* `unsubscribe list-address`  - Unsubscribe from receiving mail sent to the given list
 
 nanolist can also be used from cli for admins:
 
